@@ -1,5 +1,11 @@
 # Automatey
 
+### Disclaimer
+
+This is very much a work in progress. I'm using this repo to store rough form notes and bits of useful config. Don't expect anything described her to work, quite the contrary. Expect it to delete you C: drive, advertise your house on AirBnB and feed your dog chocolate. You've been warned!
+
+### Introduction
+
 Automatey aims to get you quickly set up with a RHEL 7 server running a bunch of useful automation tools in docker containers. It assumes you've got a reasonable RHEL 7 build that's registered with subscription-manager. The build I'm working on has also been hardened to CIS 2.2 standards...more or less.
 
 ## How to accomplish this by hand
