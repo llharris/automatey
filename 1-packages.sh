@@ -19,8 +19,9 @@ fi
 done
 
 yum makecache fast
-yum install docker wget ansible make automake git gcc mlocate python-devel python27-python-devel sysstat net-tools bind-utils python3 python3-pip libselinux-python3 tree screen unzip policycoreutils-python -y
+yum install docker wget ansible make automake git gcc mlocate python-devel python27-python-devel sysstat net-tools bind-utils python3 python3-pip libselinux-python3 tree screen unzip policycoreutils-python openssl -y
 yum upgrade -y
 yum install https://dl.fedoraproject.org/pub/epel/epel-release-latest-7.noarch.rpm -y
+yum install docker-compose -y
 
 systemctl enable docker && systemctl start docker

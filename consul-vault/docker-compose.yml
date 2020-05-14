@@ -1,0 +1,25 @@
+version: '3.2'
+
+services:
+
+  consul:
+    image: consul:1.7.3
+    container_name: consul
+    volumes:
+      - /opt/automatey/consul/data:/consul/data:Z
+      - /opt/automatey/consul/config:/consul/config:Z
+    networks:
+      - tooling
+    ports:
+      - '8300:8300'
+      - '8301:8301'
+      - '8301:8301/udp'
+      - '8500:8500'
+      - '8501:8501'
+      - '8600:8600'
+      - '8600:8600/udp'
+    command: agent -server -bootstrap -ui -client=0.0.0.0 -config-file=/consul/config/consul-config.json
+
+networks:
+  tooling:
+    driver: bridge

@@ -1,0 +1,43 @@
+version: '3.2'
+
+services:
+
+  vault:
+    image: vault:1.3.5
+    container_name: vault
+    volumes:
+      - vault_config:/vault/config
+      - vault_policies:/vault/policies
+      - vault_data:/vault/data
+      - vault_logs:/vault/logs
+    networks:
+      - tooling:
+    ports:
+      - '8200:8200'
+    environment:
+      - VAULT_ADDR=http://127.0.0.1:8200
+    command: server -config=/vault/config/vault-config.json
+    cap_add: 
+      - IPC_LOCK
+    depends_on:
+      - consul
+
+
+
+
+  consul:
+    image: consul:1.7.3
+    container_name: consul
+    volumes:
+      - consul_data:/
+    networks:
+    ports:
+      - '8300:8300'
+      - '8301:8301'
+      - '8301:8301/udp'
+      - '8500:8500'
+      - '8600:8600'
+      - '8600:8600/udp'
+
+volumes:
+  consul_data:  
