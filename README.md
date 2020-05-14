@@ -219,11 +219,42 @@ Here's my `consul-config.json` example:
 
 You can see that when we run the container pointing at this config, we've managed to get it running over TLS on the 8501 HTTPS port, we've renamed the DC to "North" and the node to "automatey". W00t!
 
-![screenshot](https://i.imgur.com/0NKKZX8.png)
+![screenshot](https://i.imgur.com/0NKKZX8.png) 
+
+The `ca_file` is a copy of the CA certificate bundle from `/etc/pki/CA/certs/ca.key` just renamed to `ca-bundle.crt` and dropped into the right location.
+
+#### Bind Mounts vs Volumes
+
+The above example is using bind mounts which are somewhat easier to put content into, but aren't managed by Docker and are potentially harder to backup.
+
+The proper way to do it would be to setup docker volumes and then anything the container needs from the word go, like a config file for starting up a service should be built into the container image using an appropriate Dockerfile.
+
+For Consul we should build our own image which incorporates the config.json along with the certificates and keys required for TLS to be enabled.
+
+# OTHER NOTES
+
+From messing about with this, here is some of the other stuff we already know or which may prove useful in future.
+
+### Consul Network Ports
+
+Before running Consul, you should ensure the following bind ports are accessible.
+
+|Use	|Default Ports
+|-------|-------------
+|DNS: The DNS server (TCP and UDP)	|8600
+|HTTP: The HTTP API (TCP Only)	|8500
+|HTTPS: The HTTPs API	|disabled (8501)*
+|gRPC: The gRPC API	|disabled (8502)*
+|LAN Serf: The Serf LAN port |(TCP and UDP)	8301
+|Wan Serf: The Serf WAN port |(TCP and UDP)	8302
+|server: Server RPC address |(TCP Only)	8300
+|Sidecar Proxy Min: Inclusive min port number to use for automatically assigned sidecar service registrations.	|21000
+|Sidecar Proxy Max: Inclusive max port number to use for automatically assigned sidecar service registrations.	|21255
+*For HTTPS and gRPC the ports specified in the table are recommendations.
 
 
 
-
+# IN PROGRESS
 
 ## What does what
 

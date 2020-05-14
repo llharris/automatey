@@ -9,7 +9,7 @@ services:
       - /opt/automatey/consul/data:/consul/data:Z
       - /opt/automatey/consul/config:/consul/config:Z
     networks:
-      - tooling
+      - consul-vault 
     ports:
       - '8300:8300'
       - '8301:8301'
@@ -21,5 +21,5 @@ services:
     command: agent -server -bootstrap -ui -client=0.0.0.0 -config-file=/consul/config/consul-config.json
 
 networks:
-  tooling:
+  consul-vault:
     driver: bridge
