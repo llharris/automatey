@@ -248,26 +248,23 @@ Not an exact science, but from looking at the product recommendations, we need:
 - Consul - 2 CPU, 8-16GB RAM, 50GB Disk
 - OS - 1 CPU, 4GB RAM, 16GB Disk
 
-##### Total System Requirements - Main Automation Machine/Docker Host
+#### Total System Requirements - Main Automation Machine/Docker Host
 
-RAM = 32GB
-CPU Cores = 4 or 8 (probably 4)
-Disk = ~200GB
+- RAM = 32GB
+- CPU Cores = 4 or 8 (probably 4)
+- Disk = ~200GB
 
-##### System Requirements for Agent Machines
+#### System Requirements for Agent Machines
 
-Linux Agent
-RAM = 8GB
-CPU Cores = 2
-Disk = 60GB
+##### Linux Agent
+- RAM = 8GB
+- CPU Cores = 2
+- Disk = 60GB
 
-Windows Agent
-RAM = 8GB
-CPU Cores = 2
-Disk = 100GB
-
-
-
+###### Windows Agent
+- RAM = 8GB
+- CPU Cores = 2
+- Disk = 100GB
 
 ### Consul Network Ports
 
@@ -299,8 +296,57 @@ Before running Consul, you should ensure the following bind ports are accessible
 
 Note, the default ports can be changed in the agent configuration.
 
+### Filesystem Sizing RHEL Docker Hosts
 
+Might want to run this past Gary...  
 
+- /boot 1g
+- swap 16g (32g physical ram)
+- / 5g
+- /usr 5g
+- /tmp 8g
+- /opt 20g
+- /home 5g
+- /var 100g 
+- /var/tmp 2g
+- /var/log 5g
+- /var/log/audit 2g
+
+This leaves approx 30g to grow filesystems later if needed.
+
+### AWX Build as Containers
+
+Reference: https://mangolassi.it/topic/19300/install-awx-on-centos-7-with-docker 
+
+#### Pull and install Pre-Reqs
+
+```
+curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.35.3/install.sh | bash
+source ~/.bashrc
+nvm install 8
+nvm use 8
+```
+
+#### Clone Repos
+
+```
+mkdir /opt/awx && cd /opt/awx
+git clone -b 11.2.0 https://github.com/ansible/awx
+cd awx
+git clone https://github.com/ansible/awx-logos
+```
+
+Ansible AWX utilises an Ansible playbook as its installer. We have to modify some of the paths in use, otherwise everything ends up in ~/.awx which is kind of plop. As an alternative we can specify a dedicated directory, however this would then utilise bind mounts in the resulting docker-compose.yml which isn't ideal.
+
+#### Bind mounts & SELinux
+
+If we have SELinux enforcing (we will) then we have to either add :Z at the end of volume: arguments in docker-compose.yml files to allow Docker to automatically set the relevant context, or we can do it manually for bind mounts as follows:
+
+```
+semanage fcontext -a -t container_file_t "/path/to/some/stuff(/.*)?"
+restorecon -Rv /path/to/some/stuff
+```
+---
 
 # IN PROGRESS
 
