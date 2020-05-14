@@ -159,9 +159,10 @@ The above commands will generate the key and the CA cert.
 
 If we want to generate a certificate to encrypt another service, the process is pretty simple. In reality, because all containers are running on the same host, we should be able to re-use the same single key and cert on everything, so in theory, we should only need to do this once.
 
-First, generate a key: `openssl genra -out /etc/pki/tls/private/hostname.key 2048`
-Next, create a certificate signing request: `mkdir -p /etc/pki/CA/csr` then `openssl req -new -key /etc/pki/tls/private/hostname.key 2048 -out /etc/pki/CA/csr/hostname.csr`
-Fill in the stuff. Now we have the CSR, we need the CA to sign it: `openssl x509 -req -in /etc/pki/CA/csr/hostname.csr -CA /etc/pki/CA/certs/ca.crt -CAkey /etc/pki/CA/private/ca.key -CAcreateserial -out /etc/pki/CA/newcerts/hostname.crt -days 365`
+First, generate a key: `openssl genra -out /etc/pki/tls/private/hostname.key 2048`  
+Next, create a certificate signing request: `mkdir -p /etc/pki/CA/csr`  
+Then `openssl req -new -key /etc/pki/tls/private/hostname.key 2048 -out /etc/pki/CA/csr/hostname.csr`  
+Fill in the stuff. Now we have the CSR, we need the CA to sign it: `openssl x509 -req -in /etc/pki/CA/csr/hostname.csr -CA /etc/pki/CA/certs/ca.crt -CAkey /etc/pki/CA/private/ca.key -CAcreateserial -out /etc/pki/CA/newcerts/hostname.crt -days 365`  
 You'll need to specify the CA key passphrase when you run the above command.
 
 
