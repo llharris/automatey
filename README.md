@@ -165,6 +165,65 @@ Then `openssl req -new -key /etc/pki/tls/private/hostname.key 2048 -out /etc/pki
 Fill in the stuff. Now we have the CSR, we need the CA to sign it: `openssl x509 -req -in /etc/pki/CA/csr/hostname.csr -CA /etc/pki/CA/certs/ca.crt -CAkey /etc/pki/CA/private/ca.key -CAcreateserial -out /etc/pki/CA/newcerts/hostname.crt -days 365`  
 You'll need to specify the CA key passphrase when you run the above command.
 
+### TLS-ifying a Containerised App
+
+This appears to be a bit of a dark art. Exactly what you do depends on the app in question, although it seems that the steps are fairly similar. So, here is an example of making Consul do HTTPS.
+
+This is my example Consul docker-compose.yml...
+
+```
+version: '3.2'
+
+services:
+
+  consul:
+    image: consul:1.7.3
+    container_name: consul
+    volumes:
+      - /opt/automatey/consul/data:/consul/data:Z
+      - /opt/automatey/consul/config:/consul/config:Z
+    ports:
+      - '8300:8300'
+      - '8301:8301'
+      - '8301:8301/udp'
+      - '8500:8500'
+      - '8501:8501'
+      - '8600:8600'
+      - '8600:8600/udp'
+    command: agent -server -bootstrap -ui -client=0.0.0.0 -config-file=/consul/config/consul-config.json
+```
+
+The options we need to specify to enable HTTPS and point Consul at the right certificates etc can't be passed on the command line, but they can be presented within a config file which we can point to on the command line.
+
+So we have to put what we need into: `/opt/automatey/consul/config` on the host which is mounted under `/consul/config` within the container. 
+
+Here's my `consul-config.json` example:
+```
+{
+  "datacenter": "North",
+  "data_dir": "/consul/data",
+  "log_level": "INFO",
+  "node_name": "automatey",
+  "server": true,
+  "addresses": {
+    "https": "0.0.0.0"
+  },
+  "ports": {
+    "https": 8501
+  },
+  "key_file": "/consul/config/tls/private/my.key",
+  "cert_file": "/consul/config/tls/certs/my.crt",
+  "ca_file": "/consul/config/tls/certs/ca-bundle.crt"
+}
+```
+
+You can see that when we run the container pointing at this config, we've managed to get it running over TLS on the 8501 HTTPS port, we've renamed the DC to "North" and the node to "automatey". W00t!
+
+![screenshot](https://i.imgur.com/0NKKZX8.png)
+
+
+
+
 
 ## What does what
 
