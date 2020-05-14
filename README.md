@@ -2,7 +2,7 @@
 
 ### Disclaimer
 
-This is very much a work in progress. I'm using this repo to store rough form notes and bits of useful config. Don't expect anything described here to work, quite the contrary. Expect it to delete you C: drive, advertise your house on AirBnB and feed your dog chocolate. You've been warned!
+This is very much a work in progress. I'm using this repo to store rough form notes and bits of useful config. Don't expect anything described here to work, quite the contrary. Expect it to delete your C: drive, advertise your house on AirBnB and feed your dog chocolate. You've been warned!
 
 ### Introduction
 
