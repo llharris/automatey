@@ -142,6 +142,29 @@ Followed by installing `docker-compose`
 
 Finally we enable and start the docker engine service.
 
+### Configure a Certificate Authority
+
+We want to be able to easily generate some self-signed certificates. We aren't so much bothered about proving identity of services, more preventing sensitive information getting sniffed on the network, so where we can we'll want to use TLS certs unless someone can provide us with a proper trusted CA somewhere in the environment.
+
+#### Generate Private Key Passphrase
+`openssl rand -base64 16` This will generate us a nice random string to protect our private key. Don't lose this!
+```
+cd /etc/pki/CA/private
+openssl genrsa -aes256 -out ca.key 2048
+openssl req -new -x509 -days 3650 -key /etc/pki/CA/private/ca.key -out /etc/pki/CA/certs/ca.crt
+```
+The above commands will generate the key and the CA cert.
+
+#### Certificate Generation Process
+
+If we want to generate a certificate to encrypt another service, the process is pretty simple. In reality, because all containers are running on the same host, we should be able to re-use the same single key and cert on everything, so in theory, we should only need to do this once.
+
+First, generate a key: `openssl genra -out /etc/pki/tls/private/hostname.key 2048`
+Next, create a certificate signing request: `mkdir -p /etc/pki/CA/csr` then `openssl req -new -key /etc/pki/tls/private/hostname.key 2048 -out /etc/pki/CA/csr/hostname.csr`
+Fill in the stuff. Now we have the CSR, we need the CA to sign it: `openssl x509 -req -in /etc/pki/CA/csr/hostname.csr -CA /etc/pki/CA/certs/ca.crt -CAkey /etc/pki/CA/private/ca.key -CAcreateserial -out /etc/pki/CA/newcerts/hostname.crt -days 365`
+You'll need to specify the CA key passphrase when you run the above command.
+
+
 ## What does what
 
 1-packages.sh - Enables required repos, installs RPMS (so you get ansible) and enables and starts Docker engine.
