@@ -144,6 +144,8 @@ Finally we enable and start the docker engine service.
 
 ### Configure a Certificate Authority
 
+Reference: https://www.centlinux.com/2019/01/configure-certificate-authority-ca-centos-7.html
+
 We want to be able to easily generate some self-signed certificates. We aren't so much bothered about proving identity of services, more preventing sensitive information getting sniffed on the network, so where we can we'll want to use TLS certs unless someone can provide us with a proper trusted CA somewhere in the environment.
 
 #### Generate Private Key Passphrase
@@ -235,6 +237,38 @@ For Consul we should build our own image which incorporates the config.json alon
 
 From messing about with this, here is some of the other stuff we already know or which may prove useful in future.
 
+### Virtual Machine Specs
+
+Not an exact science, but from looking at the product recommendations, we need:
+
+- Gitlab CE - 4GB RAM supports up to 100 users
+- AWX - Minimum 4GB RAM, more = more better, 2 CPUs, 20GB Disk minimum
+- Jenkins - 1 CPU, 1GB RAM, 50GB Disk
+- Vault - 2 CPU, 4-8GB RAM, 25GB Disk
+- Consul - 2 CPU, 8-16GB RAM, 50GB Disk
+- OS - 1 CPU, 4GB RAM, 16GB Disk
+
+##### Total System Requirements - Main Automation Machine/Docker Host
+
+RAM = 32GB
+CPU Cores = 4 or 8 (probably 4)
+Disk = ~200GB
+
+##### System Requirements for Agent Machines
+
+Linux Agent
+RAM = 8GB
+CPU Cores = 2
+Disk = 60GB
+
+Windows Agent
+RAM = 8GB
+CPU Cores = 2
+Disk = 100GB
+
+
+
+
 ### Consul Network Ports
 
 Before running Consul, you should ensure the following bind ports are accessible.
@@ -251,6 +285,20 @@ Before running Consul, you should ensure the following bind ports are accessible
 |Sidecar Proxy Min: Inclusive min port number to use for automatically assigned sidecar service registrations.	|21000
 |Sidecar Proxy Max: Inclusive max port number to use for automatically assigned sidecar service registrations.	|21255
 *For HTTPS and gRPC the ports specified in the table are recommendations.
+
+
+#### Consul Port Info
+
+- DNS Interface Used to resolve DNS queries. - We won't use this.
+- HTTP API This is used by clients to talk to the HTTP API. - We probably won't use this, HTTPS ideally
+- HTTPS API (Optional) Is off by default, but port 8501 is a convention used by various tools as the default.
+- gRPC API (Optional). Currently gRPC is only used to expose the xDS API to Envoy proxies. It is off by default, but port 8502 is a convention used by various tools as the default. Defaults to 8502 in -dev mode. - We probably won't use this either.
+- Serf LAN This is used to handle gossip in the LAN. Required by all agents.
+- Serf WAN This is used by servers to gossip over the WAN, to other servers. As of Consul 0.8 the WAN join flooding feature requires the Serf WAN port (TCP/UDP) to be listening on both WAN and LAN interfaces. See also: Consul 0.8.0 CHANGELOG and GH-3058
+-Server RPC This is used by servers to handle incoming requests from other agents.
+
+Note, the default ports can be changed in the agent configuration.
+
 
 
 
