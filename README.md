@@ -6,7 +6,7 @@ This is very much a work in progress. I'm using this repo to store rough form no
 
 ### Introduction
 
-Automatey aims to get you quickly set up with a RHEL 7 server running a bunch of useful automation tools in docker containers. It assumes you've got a reasonable RHEL 7 build that's registered with subscription-manager. The build I'm working on has also been hardened to CIS 2.2 standards...more or less.
+Automatey aims to get you quickly set up with a RHEL 7 server running a bunch of useful automation tools in docker containers. It assumes you've got a reasonable RHEL 7 build that's registered with subscription-manager. The build I'm working on has also been hardened to CIS 2.2 standards...more or less. Ultimately AUTOMATEY will be a series of scripts, config files and docker stuff that lets you get from RHEL ISO to useful automation tooling as quickly and as cheaply as possible.
 
 ## How to accomplish this by hand
 
