@@ -275,7 +275,38 @@ Contents of the working vault config look like this...
 
 We have to do a tls_skip_verify because our original cert was generated with a CN of automatey.fritz.box. Really we need a cert that includes subject alternative names that cover all of the relevant container names, but I can't remember how to do that :/  
 
+# Gitlab-CE
 
+This is our starting point docker-compose.yml...  
+```
+version: '3.2'
+
+services:
+
+  web:
+    image: 'gitlab/gitlab-ce:12.10.3-ce.0'
+    restart: unless-stopped
+    hostname: 'automatey.fritz.box'
+    environment:
+      GITLAB_OMNIBUS_CONFIG: |
+        external_url 'https://automatey.fritz.box'
+        gitlab_rails['gitlab_shell_ssh_port'] = 2222
+    ports:
+      - '80:80'
+      - '443:443'
+      - '2222:22'
+    volumes:
+      - 'gitlab_config:/etc/gitlab'
+      - 'gitlab_logs:/var/log/gitlab'
+      - 'gitlab_data:/var/opt/gitlab'
+
+volumes:
+  gitlab_config:
+  gitlab_logs:
+  gitlab_data:
+```
+
+We need to enable TLS support for self-signed certificates.
 
 
 # OTHER NOTES
