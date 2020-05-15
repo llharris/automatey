@@ -246,6 +246,8 @@ Copy the config file, certs and private key from the host: `docker cp [src] cons
 Bring it down: `docker-compose down`  
 Add the config-file argument back into the docker-compose.yml and then start it up again.  
 
+On second thoughts, it's much easier to create our own Dockerfile and just copy in the relevant config files, certs and keys to the container image. I'll add some more about this later.
+
 # Vault with Consul as a Backend using TLS
 
 This was quite painful. The main crux is in getting the vault configuration file correct and then making it available in the vault_config volume. I just copied it under /var/lib/docker/volumes/... which I don't think is the proper way to do it, but it seems to work.
