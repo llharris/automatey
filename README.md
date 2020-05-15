@@ -246,6 +246,37 @@ Copy the config file, certs and private key from the host: `docker cp [src] cons
 Bring it down: `docker-compose down`  
 Add the config-file argument back into the docker-compose.yml and then start it up again.  
 
+# Vault with Consul as a Backend using TLS
+
+This was quite painful. The main crux is in getting the vault configuration file correct and then making it available in the vault_config volume. I just copied it under /var/lib/docker/volumes/... which I don't think is the proper way to do it, but it seems to work.
+
+Contents of the working vault config look like this...
+
+```
+{
+  "storage": {
+    "consul": {
+      "address": "consul:8501",
+      "path": "vault/",
+      "scheme": "https",
+      "tls_skip_verify": "true"
+    }
+  },
+  "listener": {
+    "tcp": {
+      "address": "0.0.0.0:8200",
+      "tls_cert_file": "/vault/config/tls/certs/my.crt",
+      "tls_key_file": "/vault/config/tls/private/my.key"
+    }
+  },
+  "ui": true
+}
+```
+
+We have to do a tls_skip_verify because our original cert was generated with a CN of automatey.fritz.box. Really we need a cert that includes subject alternative names that cover all of the relevant container names, but I can't remember how to do that :/  
+
+
+
 
 # OTHER NOTES
 
