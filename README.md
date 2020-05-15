@@ -237,7 +237,15 @@ The above example is using bind mounts which are somewhat easier to put content 
 
 The proper way to do it would be to setup docker volumes and then anything the container needs from the word go, like a config file for starting up a service should be built into the container image using an appropriate Dockerfile.
 
-For Consul we should build our own image which incorporates the config.json along with the certificates and keys required for TLS to be enabled.
+~~For Consul we should build our own image which incorporates the config.json along with the certificates and keys required for TLS to be enabled.~~
+
+ACTUALLY, the way to do this is create docker volumes in the docker compose; consul_data and consul_config. Mount consul_config on /consul/config in the container. Remove the `-config-file=/consul/config/consul-config.json` from the docker-compose.yml, and bring it up. 
+
+Login to the container: `docker exec -it consul /bin/sh`  
+Copy the config file, certs and private key from the host: `docker cp [src] consul:/consul/config/foo/bar`
+Bring it down: `docker-compose down`  
+Add the config-file argument back into the docker-compose.yml and then start it up again.  
+
 
 # OTHER NOTES
 
