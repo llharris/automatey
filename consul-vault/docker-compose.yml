@@ -20,9 +20,34 @@ services:
       - '8600:8600/udp'
     command: agent -server -bootstrap -ui -client=0.0.0.0 -config-file=/consul/config/consul-config.json
 
+  vault:
+    image: vault:latest
+    container_name: vault
+    volumes:
+      - vault_config:/vault/config
+      - vault_policies:/vault/policies
+      - vault_data:/vault/data
+      - vault_logs:/vault/logs
+    networks:
+      - consul-vault
+    ports:
+      - '8200:8200'
+    environment:
+      - VAULT_ADDR=http://127.0.0.1:8200
+    command: server 
+    cap_add:
+      - IPC_LOCK
+    depends_on:
+      - consul
+
+
 volumes:
   consul_data:
   consul_config:
+  vault_config:
+  vault_policies:
+  vault_data:
+  vault_logs:
 
 networks:
   consul-vault:
